@@ -4,18 +4,14 @@
  SparkFun Electronics
  Date: November 19th, 2014
  License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
-
  This is the calibration sketch. Use it to determine the calibration_factor that the main example uses. It also
  outputs the zero_factor useful for projects that have a permanent mass on the scale in between power cycles.
-
  Setup your scale and start the sketch WITHOUT a weight on the scale
  Once readings are displayed place the weight on the scale
  Press +/- or a/z to adjust the calibration_factor until the output readings match the known weight
  Use this calibration_factor on the example sketch
-
  This example assumes pounds (lbs). If you prefer kilograms, change the Serial.print(" lbs"); line to kg. The
  calibration factor will be significantly different but it will be linearly related to lbs (1 lbs = 0.453592 kg).
-
  Your calibration factor may be very positive or very negative. It all depends on the setup of your scale system
  and the direction the sensors deflect from zero state
  This example code uses bogde's excellent library: https://github.com/bogde/HX711
@@ -24,11 +20,8 @@
  3 -> DOUT
  5V -> VCC
  GND -> GND
-
  Most any pin on the Arduino Uno will be compatible with DOUT/CLK.
-
  The HX711 board can be powered from 2.7V to 5V so the Arduino 5V power should be fine.
-
 */
 
 #include "HX711.h"
@@ -58,7 +51,7 @@ HX711 scale_4(DOUT5, CLK5);
 //float calibration_factor_5= 77650;
 
 
-float calibration_factor[5]= {22500,22500,22500,22500,22500};
+float calibration_factor[5]= {22500,77650,77650,77650,77650};
 
 
 
@@ -181,7 +174,7 @@ String temp="";
     String firstValue = temp.substring(0, commaIndex);
     int firstValue_int=firstValue.toInt();
     String secondValue = temp.substring(commaIndex+1); 
-    int secondValue_int=secondValue.toInt();
+    float secondValue_int=secondValue.toFloat();
     
     Serial.print(temp);
       Serial.print(',');
@@ -192,6 +185,7 @@ String temp="";
     Serial.print(firstValue);
       Serial.print(',');
     Serial.println(secondValue);
+    
     if (firstValue_int==5)
       {
        calibration_factor[1]=secondValue_int;
@@ -199,13 +193,22 @@ String temp="";
        calibration_factor[3]=secondValue_int;
        calibration_factor[4]=secondValue_int;
       }
-    else
-      {
+     else if (firstValue_int==6)
+       {
+        scale_0.tare();
+        scale_1.tare();
+        scale_2.tare();
+        scale_3.tare();
+        scale_4.tare();
+       }
+       else
+       {
        calibration_factor[firstValue_int]=secondValue_int;
-      }
+       }
+    
+      
+   
     }
 
 }
-
-
 
